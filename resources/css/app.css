@@ -157,3 +157,24 @@
         @apply bg-background text-foreground;
     }
 }
+
+@keyframes gradient-animation {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+.gradient-button {
+    background: linear-gradient(90deg, var(--primary) 0%, oklch(0.6 0.118 184.704) 50%, var(--primary) 100%);
+    background-size: 200% 100%;
+    animation: gradient-animation 3s linear infinite;
+    color: var(--primary-foreground);
+    transition: transform 0.2s;
+}
+
+.gradient-button:hover {
+    transform: translateY(-1px);
+}
