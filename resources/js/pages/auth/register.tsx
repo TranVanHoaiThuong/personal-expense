@@ -12,6 +12,7 @@ import AuthLayout from '@/layouts/auth-layout';
 type RegisterForm = {
     name: string;
     email: string;
+    username: string;
     password: string;
     password_confirmation: string;
 };
@@ -20,6 +21,7 @@ export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm<Required<RegisterForm>>({
         name: '',
         email: '',
+        username: '',
         password: '',
         password_confirmation: '',
     });
@@ -37,7 +39,7 @@ export default function Register() {
             <form className="flex flex-col gap-6" onSubmit={submit}>
                 <div className="grid gap-6">
                     <div className="grid gap-2">
-                        <Label htmlFor="name">Name</Label>
+                        <Label htmlFor="name">Fullname</Label>
                         <Input
                             id="name"
                             type="text"
@@ -65,6 +67,22 @@ export default function Register() {
                             onChange={(e) => setData('email', e.target.value)}
                             disabled={processing}
                             placeholder="email@example.com"
+                        />
+                        <InputError message={errors.email} />
+                    </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="username">Username</Label>
+                        <Input
+                            id="username"
+                            type="username"
+                            required
+                            tabIndex={2}
+                            autoComplete="username"
+                            value={data.username}
+                            onChange={(e) => setData('username', e.target.value)}
+                            disabled={processing}
+                            placeholder="example"
                         />
                         <InputError message={errors.email} />
                     </div>
