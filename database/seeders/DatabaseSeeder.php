@@ -14,20 +14,29 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Chạy RoleSeeder trước
+        $this->call([
+            RoleSeeder::class,
+        ]);
+
         // User::factory(10)->create();
 
-        User::factory()->create([
+        $admin = User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@example.com',
             'username' => 'admin',
             'password' => Hash::make('123')
         ]);
 
-        User::factory()->create([
+        $manualUser = User::factory()->create([
             'name' => 'Manual User',
             'email' => 'manualuser@example.com',
             'username' => 'manualuser',
             'password'=> Hash::make('123')
         ]);
+
+        // Gán role cho users
+        $admin->assignRole('admin');
+        $manualUser->assignRole('manualuser');
     }
 }
