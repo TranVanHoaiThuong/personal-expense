@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
 
@@ -55,6 +56,30 @@ class HandleInertiaRequests extends Middleware
             'sidebarOpen' => $request->cookie('sidebar_state') === 'true',
             'isadmin' => $user ? $user->hasRole('admin') : false,
             'wallet' => $wallet ? $wallet : null,
+            'translations' => $this->getTranslations($request->cookie('language') ?? 'en'),
         ];
+    }
+
+    private function getTranslations(string $language): array
+    {
+        $path = resource_path("lang/$language");
+        $translations = [];
+
+        // Load base translations
+        foreach (File::files($path) as $file) {
+            $filename = pathinfo($file, PATHINFO_FILENAME);
+            $translations[$filename] = require $file->getPathname();
+        }
+
+        // Load nested translations
+        if (File::isDirectory("$path/pages")) {
+            $translations['pages'] = [];
+            foreach (File::files("$path/pages") as $file) {
+                $filename = pathinfo($file, PATHINFO_FILENAME);
+                $translations['pages'][$filename] = require $file->getPathname();
+            }
+        }
+
+        return $translations;
     }
 }

@@ -7,17 +7,19 @@ import { Link } from '@inertiajs/react';
 import { FileChartColumn, LayoutGrid, ShieldCheck, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 import { useCan } from '@/hooks/use-can';
+import { useTranslation } from '@/lib/i18n';
 
 export function AppSidebar() {
+    const { t } = useTranslation();
 
     const mainNavItems: NavItem[] = [
         {
-            title: 'Dashboard',
+            title: t('sidebar.dashboard'),
             href: '/dashboard',
             icon: LayoutGrid,
         },
         {
-            title: 'Reports',
+            title: t('sidebar.reports'),
             href: '/reports',
             icon: FileChartColumn,
         },
@@ -25,7 +27,7 @@ export function AppSidebar() {
 
     // Item cha Role
     const roleParentItem: NavItem = {
-        title: 'Role',
+        title: t('sidebar.roleandpermissions'),
         href: '#',
         icon: ShieldCheck,
     };
@@ -33,12 +35,12 @@ export function AppSidebar() {
     // Các item con cho menu Role
     const roleChildItems: NavItem[] = [
         {
-            title: 'Roles',
+            title: t('sidebar.roles'),
             href: '/roles',
             icon: ShieldCheck,
         },
         {
-            title: 'Users',
+            title: t('sidebar.users'),
             href: '/users',
             icon: Users,
         },
@@ -65,7 +67,7 @@ export function AppSidebar() {
                 <NavMain items={mainNavItems} />
                 {hasManageUsersPermission && (
                     <SidebarGroup className="px-2 py-0">
-                        <SidebarGroupLabel>Management</SidebarGroupLabel>
+                        <SidebarGroupLabel>{ t('title.management') }</SidebarGroupLabel>
                         <SidebarMenu>
                             <NavCollapsible parentItem={roleParentItem} childItems={roleChildItems} />
                         </SidebarMenu>
