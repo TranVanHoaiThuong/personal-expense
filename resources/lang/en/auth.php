@@ -1,8 +1,27 @@
 <?php
 
 return [
-    'login' => 'Login',
+    'login' => 'Log in',
     'register' => 'Register',
     'account_settings' => 'Account settings',
     'logout' => 'Logout',
+    'login_title' => 'Log in to your account',
+    'login_description' => 'Enter your email/username and password below to log in',
+    'email_or_username' => 'Email or Username',
+    'email_username_placeholder' => 'email@example.com or username',
+    'password' => 'Password',
+    'forgot_password' => 'Forgot password',
+    'remember_me' => 'Remember me',
+    'sign_up' => 'Sign up',
+    'dont_have_account' => 'Don\'t have an account?',
+    'create_an_account' => 'Create an account',
+    'fullname' => 'Fullname',
+    'email_address' => 'Email address',
+    'username' => 'Username',
+    'confirm_password' => 'Confirm password',
+    'create_account' => 'Create account',
+    'already_have_account' => 'Already have an account?',
+    'forgot_password_description' => 'Enter your email address and we will send you a password reset link',
+    'email_password_reset_link' => 'Email password reset link',
+    'or_return_to_login' => 'Or, return to',
 ];

@@ -1,23 +1,22 @@
 import { BalanceHeading } from '@/components/balance-heading';
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
+import { useTranslation } from '@/lib/i18n';
 import { type BreadcrumbItem } from '@/types';
-import { type SharedData } from '@/types';
-import { Head, usePage } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 
 export default function Dashboard() {
-    const { isadmin } = usePage<SharedData>().props;
-
+    const { t } = useTranslation();
     const breadcrumbs: BreadcrumbItem[] = [
         {
-            title: `Dashboard ${isadmin ? 'Admin' : 'User'}`,
+            title: t('sidebar.dashboard'),
             href: '/dashboard',
         },
     ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Dashboard" />
+            <Head title={t('sidebar.dashboard')} />
             <BalanceHeading />
             <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4">
                 <div className="grid auto-rows-min gap-4 md:grid-cols-3">

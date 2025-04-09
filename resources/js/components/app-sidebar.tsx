@@ -1,7 +1,6 @@
-import { NavCollapsible } from '@/components/nav-collapsible';
-import { NavMain } from '@/components/nav-main';
+import { SidebarBlock } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroup, SidebarGroupLabel } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import { FileChartColumn, LayoutGrid, ShieldCheck, Users } from 'lucide-react';
@@ -12,7 +11,7 @@ import { useTranslation } from '@/lib/i18n';
 export function AppSidebar() {
     const { t } = useTranslation();
 
-    const mainNavItems: NavItem[] = [
+    const generalItems: NavItem[] = [
         {
             title: t('sidebar.dashboard'),
             href: '/dashboard',
@@ -25,15 +24,7 @@ export function AppSidebar() {
         },
     ];
 
-    // Item cha Role
-    const roleParentItem: NavItem = {
-        title: t('sidebar.roleandpermissions'),
-        href: '#',
-        icon: ShieldCheck,
-    };
-
-    // Các item con cho menu Role
-    const roleChildItems: NavItem[] = [
+    const roleItems: NavItem[] = [
         {
             title: t('sidebar.roles'),
             href: '/roles',
@@ -44,7 +35,7 @@ export function AppSidebar() {
             href: '/users',
             icon: Users,
         },
-    ];
+    ]
 
     // Chỉ hiển thị menu Role nếu có quyền manage users
     const hasManageUsersPermission = useCan('manage users');
@@ -64,15 +55,8 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
-                {hasManageUsersPermission && (
-                    <SidebarGroup className="px-2 py-0">
-                        <SidebarGroupLabel>{ t('title.management') }</SidebarGroupLabel>
-                        <SidebarMenu>
-                            <NavCollapsible parentItem={roleParentItem} childItems={roleChildItems} />
-                        </SidebarMenu>
-                    </SidebarGroup>
-                )}
+                <SidebarBlock items={generalItems} heading={t('title.general')} />
+                {hasManageUsersPermission && <SidebarBlock items={roleItems} heading={t('title.roleandpermissions')} />}
             </SidebarContent>
 
             <SidebarFooter>

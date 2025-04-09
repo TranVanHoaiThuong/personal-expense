@@ -3,5 +3,6 @@
 return [
     'general' => 'General',
     'management' => 'Management',
-    'Settings' => 'Settings'
+    'Settings' => 'Settings',
+    'roleandpermissions' => 'Roles and Permissions',
 ];
