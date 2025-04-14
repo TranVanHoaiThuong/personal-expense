@@ -3,6 +3,9 @@
 return [
     'general' => 'General',
     'management' => 'Management',
-    'Settings' => 'Settings',
+    'settings' => 'Settings',
     'roleandpermissions' => 'Roles and Permissions',
+    'expenses' => 'Expenses',
+    'index' => 'No.',
+    'action' => 'Action'
 ];
