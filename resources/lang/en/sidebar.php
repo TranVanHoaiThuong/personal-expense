@@ -6,4 +6,5 @@ return [
     'roleandpermissions' => 'Roles and Permissions',
     'roles' => 'Roles',
     'users' => 'Users',
+    'expenses_categories' => 'Expenses Categories',
 ];

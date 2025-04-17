@@ -5,7 +5,5 @@ return [
     'management' => 'Quản lý',
     'settings' => 'Cài đặt',
     'roleandpermissions' => 'Quản lý vai trò và quyền',
-    'expenses' => 'Chi tiêu',
-    'index' => 'STT',
-    'action' => 'Hành động'
+    'expenses' => 'Chi tiêu'
 ];

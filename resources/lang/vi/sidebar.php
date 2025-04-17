@@ -6,4 +6,5 @@ return [
     'roleandpermissions' => 'Quản lý vai trò và quyền',
     'roles' => 'Vai trò',
     'users' => 'Người dùng',
+    'expenses_categories' => 'Danh mục chi tiêu',
 ];

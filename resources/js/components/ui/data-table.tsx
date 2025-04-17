@@ -25,9 +25,9 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, forwardRef, useImperativeHandle } from "react";
 import axios from "@/lib/axios";
 import debounce from "lodash/debounce";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,8 @@ import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, LoaderCircle, MoreHorizontal } from "lucide-react";
 import { DataTableProps } from "@/types/table";
 import { useTranslation } from "@/lib/i18n";
+import { Checkbox } from "./checkbox";
+import { toast } from "sonner";
 
 const generatePaginationNumbers = (currentPage: number, lastPage: number) => {
     const delta = 2;
@@ -65,16 +67,23 @@ const LoadingOverlay = () => {
     );
 };
 
-export function DataTable<T extends object>({ 
+export interface DataTableRef {
+    refreshData: () => Promise<void>;
+}
+
+export const DataTable = forwardRef<DataTableRef, DataTableProps<any>>(({ 
     columns, 
     apiUrl,
     defaultPageSize = 10,
     defaultPageSizeOptions = [10, 20, 30, 40, 50],
     actionItems = [],
     indexColumn = false,
-}: DataTableProps<T>) {
+    bulkActions = [],
+    enableRowSelection = false,
+    onSelectedRowsChange = () => {}
+}, ref) => {
     const { t } = useTranslation();
-    const [data, setData] = useState<T[]>([]);
+    const [data, setData] = useState<any[]>([]);
     const { pagination, setPagination } = usePagination({
         page_size: defaultPageSize,
         page_size_options: defaultPageSizeOptions
@@ -82,36 +91,73 @@ export function DataTable<T extends object>({
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
     const [search, setSearch] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
+    const [selectedRows, setSelectedRows] = useState({});
+
+    useImperativeHandle(ref, () => ({
+        refreshData: fetchData
+    }));
 
     const tableColumns = useMemo(() => {
-        const finalColumns = [...columns];
+        const finalColumns: ColumnDef<any>[] = [];
+
+        if (enableRowSelection) {
+            finalColumns.push({
+                id: 'select',
+                header: ({ table }) => (
+                    <Checkbox
+                        checked={
+                            table.getIsAllPageRowsSelected() ||
+                            (table.getIsSomePageRowsSelected() && "indeterminate")
+                        }
+                        onCheckedChange={(value) => {
+                            table.toggleAllPageRowsSelected(!!value);
+                        }}
+                        aria-label="Select all"
+                    />
+                ),
+                cell: ({ row }) => (
+                    <Checkbox
+                        checked={row.getIsSelected()}
+                        onCheckedChange={(value) => {
+                            row.toggleSelected(!!value);
+                        }}
+                        aria-label="Select row"
+                        className="translate-y-[2px]"
+                    />
+                ),
+                enableSorting: false,
+                enableHiding: false,
+            });
+        }
 
         if (indexColumn) {
-            const indexCol: ColumnDef<T> = {
+            const indexCol: ColumnDef<any> = {
                 id: "index",
-                header: t('title.index'),
+                header: t('table.index'),
                 cell: ({ row }) => row.index + 1
             };
 
-            finalColumns.unshift(indexCol);
+            finalColumns.push(indexCol);
         }
-        if (actionItems?.length) {
 
-            const actionColumn: ColumnDef<T> = {
+        finalColumns.push(...columns);
+
+        if (actionItems?.length) {
+            const actionColumn: ColumnDef<any> = {
                 id: "actions",
-                header: t('title.action'),
+                header: t('table.action'),
                 cell: ({ row }) => {
+                    const ignoreHidden = actionItems.filter(item => !item.hidden || !item.hidden(row.original));
+                    if(ignoreHidden.length === 0) return null;
                     return (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" className="h-8 w-8 p-0">
-                                    <span className="sr-only">Open menu</span>
                                     <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                {actionItems.map((item, index) => (
+                                {ignoreHidden.map((item, index) => (
                                     <React.Fragment key={index}>
                                         <DropdownMenuItem onClick={() => item.onClick(row.original)}>
                                             {item.label}
@@ -147,7 +193,7 @@ export function DataTable<T extends object>({
             setData(responseData.data || []);
             setPagination(responseData.pagination);
         } catch (err) {
-            console.error('Failed to fetch data:', err);
+            toast.error('Failed to fetch data:' + err);
         } finally {
             setLoading(false);
         }
@@ -175,24 +221,59 @@ export function DataTable<T extends object>({
                 pageSize: pagination.page_size,
             },
             columnFilters,
+            rowSelection: selectedRows
         },
         manualPagination: true,
+        enableRowSelection: true,
+        enableMultiRowSelection: true,
+        onRowSelectionChange: setSelectedRows
     });
+
+    useEffect(() => {
+        if (onSelectedRowsChange) {
+            const selectedRows = table
+                .getSelectedRowModel()
+                .rows.map(row => row.original);
+            onSelectedRowsChange(selectedRows);
+        }
+    }, [selectedRows]);
 
     const paginationNumbers = generatePaginationNumbers(
         pagination.current_page, 
         pagination.last_page
     );
 
+    const BulkActionBar = () => {
+        const selectedRows = table.getSelectedRowModel().rows;
+        return (
+            <div className="flex items-center gap-2 py-2">
+                <div className="flex items-center gap-2">
+                    {bulkActions.map((action, index) => (
+                        <Button
+                            key={index}
+                            variant={action.variant || "default"}
+                            size="sm"
+                            onClick={() => action.onClick(selectedRows.map(row => row.original))}
+                            disabled={action.isDisabled}
+                        >
+                            {action.icon && action.icon} {action.label}
+                        </Button>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div>
-            <div className="flex items-center justify-end md:w-[1/4] py-4">
+            <div className="flex items-start gap-2 flex-col md:items-center md:flex-row md:justify-between py-4">
+                <BulkActionBar />
                 <Input
-                    placeholder="Search..."
+                    placeholder={`${t('table.search')}...`}
                     onChange={(event) =>
                         debounceSearch(event.target.value)
                     }
-                    className="max-w-sm"
+                    className="max-w-sm md:max-w-[250px]"
                 />
             </div>
             <div className="rounded-md border relative">
@@ -237,7 +318,7 @@ export function DataTable<T extends object>({
                                     colSpan={tableColumns.length}
                                     className="h-24 text-center"
                                 >
-                                    {!loading && t('title.no_results')}
+                                    {!loading && t('table.no_records')}
                                 </TableCell>
                             </TableRow>
                         )}
@@ -246,11 +327,14 @@ export function DataTable<T extends object>({
             </div>
             <div className="flex items-center justify-between space-x-2 py-4">
                 <div className="text-sm text-muted-foreground text-center md:text-start m-0">
-                    Showing {pagination.from} to {pagination.to} of{" "}
-                    {pagination.total} entries
+                    {t('table.data_showing', {
+                        from: pagination.from.toString(),
+                        to: pagination.to.toString(),
+                        total: pagination.total.toString()
+                    })}
                 </div>
                 <div className="flex items-center space-x-2">
-                    <p className="text-sm font-medium text-muted-foreground">Rows per page</p>
+                    <p className="text-sm font-medium text-muted-foreground">{t('table.rows_per_page')}</p>
                     <Select
                         value={pagination.page_size.toString()}
                         onValueChange={(value) => {
@@ -327,4 +411,4 @@ export function DataTable<T extends object>({
             </div>
         </div>
     );
-}
+});

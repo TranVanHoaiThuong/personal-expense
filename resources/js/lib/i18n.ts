@@ -12,6 +12,7 @@ export function useTranslation() {
         }
 
         Object.entries(replacements).forEach(([key, value]) => {
+            translation = translation.replace(`{${key}}`, value);
             translation = translation.replace(`:${key}`, value);
         });
 

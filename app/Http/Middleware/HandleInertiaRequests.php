@@ -72,13 +72,13 @@ class HandleInertiaRequests extends Middleware
         }
 
         // Load nested translations
-        if (File::isDirectory("$path/pages")) {
-            $translations['pages'] = [];
-            foreach (File::files("$path/pages") as $file) {
-                $filename = pathinfo($file, PATHINFO_FILENAME);
-                $translations['pages'][$filename] = require $file->getPathname();
-            }
-        }
+        // if (File::isDirectory("$path/pages")) {
+        //     $translations['pages'] = [];
+        //     foreach (File::files("$path/pages") as $file) {
+        //         $filename = pathinfo($file, PATHINFO_FILENAME);
+        //         $translations['pages'][$filename] = require $file->getPathname();
+        //     }
+        // }
 
         return $translations;
     }
