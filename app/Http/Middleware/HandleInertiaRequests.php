@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Inertia\Middleware;
 use Tighten\Ziggy\Ziggy;
@@ -59,8 +60,26 @@ class HandleInertiaRequests extends Middleware
             'translations' => $this->getTranslations($request->cookie('language') ?? 'en'),
         ];
     }
-
     private function getTranslations(string $language): array
+    {
+        $cacheKey = "translations:{$language}";
+        
+        try {
+            return Cache::remember($cacheKey, now()->addDay(), function () use ($language) {
+                return $this->loadTranslations($language);
+            });
+        } catch (\Exception $e) {
+            \Log::warning('Failed to use default cache driver for translations, falling back to database cache', [
+                'error' => $e->getMessage()
+            ]);
+            
+            return Cache::store('database')->remember($cacheKey, now()->addDay(), function () use ($language) {
+                return $this->loadTranslations($language);
+            });
+        }
+    }
+
+    private function loadTranslations(string $language): array
     {
         $path = resource_path("lang/$language");
         $translations = [];
