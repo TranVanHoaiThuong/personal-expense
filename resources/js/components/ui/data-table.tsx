@@ -328,8 +328,8 @@ export const DataTable = forwardRef<DataTableRef, DataTableProps<any>>(({
             <div className="flex items-center justify-between space-x-2 py-4">
                 <div className="text-sm text-muted-foreground text-center md:text-start m-0">
                     {t('table.data_showing', {
-                        from: pagination.from.toString(),
-                        to: pagination.to.toString(),
+                        from: pagination.from ? pagination.from.toString() : '0',
+                        to: pagination.to ? pagination.to.toString() : '0',
                         total: pagination.total.toString()
                     })}
                 </div>

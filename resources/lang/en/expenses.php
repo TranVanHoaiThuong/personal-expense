@@ -17,4 +17,9 @@ return [
     'category_created' => 'Category saved successfully',
     'category_create_failed' => 'Error creating/editing category: {message}',
     'require_category_name_error' => 'Category name is required',
+    'expense_type' => 'Expense Type',
+    'expense_amount' => 'Amount',
+    'expense_category' => 'Category',
+    'expense_transaction_date' => 'Transaction Date',
+    'expense_note' => 'Note',
 ];

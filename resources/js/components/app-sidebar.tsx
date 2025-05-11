@@ -3,7 +3,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { SharedData, type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/react';
-import { FileChartColumn, LayoutGrid, ShieldCheck, SquareStack, Users } from 'lucide-react';
+import { FileChartColumn, HandCoins, LayoutGrid, ShieldCheck, SquareStack, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 import { useCan } from '@/hooks/use-can';
 import { useTranslation } from '@/lib/i18n';
@@ -43,7 +43,12 @@ export function AppSidebar() {
             title: t('sidebar.expenses_categories'),
             href: '/expenses/categories',
             icon: SquareStack,
-        }
+        },
+        {
+            title: t('sidebar.income_expense_tracker'),
+            href: '/expenses/transactions',
+            icon: HandCoins,
+        },
     ];
 
     // Chỉ hiển thị menu Role nếu có quyền manage users

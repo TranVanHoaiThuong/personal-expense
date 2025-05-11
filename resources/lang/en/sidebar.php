@@ -7,4 +7,5 @@ return [
     'roles' => 'Roles',
     'users' => 'Users',
     'expenses_categories' => 'Expenses Categories',
+    'income_expense_tracker' => 'Income & Expense Tracker',
 ];

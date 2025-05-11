@@ -17,4 +17,9 @@ return [
     'category_created' => 'Lưu thành công danh mục chi tiêu',
     'category_create_failed' => 'Có lỗi khi tạo mới/chỉnh sửa danh mục chi tiêu: {message}',
     'require_category_name_error' => 'Tên danh mục chi tiêu là bắt buộc',
+    'expense_type' => 'Loại chi tiêu',
+    'expense_amount' => 'Số tiền',
+    'expense_category' => 'Danh mục chi tiêu',
+    'expense_transaction_date' => 'Ngày giao dịch',
+    'expense_note' => 'Ghi chú',
 ];
